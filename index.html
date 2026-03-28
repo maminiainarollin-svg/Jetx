@@ -3,213 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JetX Predictor Pro</title>
-    <link rel="manifest" href="manifest.json">
+    <title>JetX Predictor & Strategy Pro</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #38bdf8;
-            --accent: #4ade80;
-            --text-dim: #94a3b8;
+            --bg: #0f172a; --card: #1e293b; --primary: #38bdf8;
+            --accent: #4ade80; --danger: #f87171; --text-dim: #94a3b8;
         }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 450px; }
+        .card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid rgba(56,189,248,0.2); margin-bottom: 15px; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+        h2 { font-size: 0.9rem; color: var(--primary); margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Stats Dashboard */
+        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-val { font-size: 1.1rem; font-weight: bold; display: block; }
+        .stat-label { font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; }
 
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        /* Signal Display */
+        .signal-zone { text-align: center; padding: 10px 0; }
+        #signalDisplay { font-size: 3.5rem; font-weight: bold; color: var(--accent); margin: 5px 0; text-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
+        .target-cote { font-size: 1.2rem; color: var(--primary); font-weight: bold; margin-bottom: 15px; }
 
-        .container {
-            width: 100%;
-            max-width: 400px;
-        }
+        /* Strategy Box */
+        .strategy-box { background: rgba(56,189,248,0.1); border: 1px dashed var(--primary); padding: 12px; border-radius: 10px; font-size: 0.85rem; line-height: 1.4; margin-bottom: 15px; }
 
-        h1 {
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--primary);
-            margin-bottom: 20px;
-        }
+        /* Controls */
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 90px; text-align: center; }
+        .input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+        .btn-main { background: var(--primary); color: var(--bg); margin-bottom: 10px; }
+        .btn-win { background: var(--accent); color: var(--bg); width: 48%; }
+        .btn-lose { background: var(--danger); color: white; width: 48%; }
+        .row { display: flex; justify-content: space-between; gap: 10px; }
 
-        .card {
-            background: var(--card);
-            border-radius: 16px;
-            padding: 24px;
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .signal-label {
-            color: var(--text-dim);
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-        }
-
-        #signalDisplay {
-            font-size: 3rem;
-            font-weight: bold;
-            color: var(--accent);
-            margin: 10px 0;
-            min-height: 70px;
-        }
-
-        .prediction-info {
-            font-size: 1.1rem;
-            margin-bottom: 20px;
-        }
-
-        #cote {
-            color: var(--primary);
-            font-weight: bold;
-        }
-
-        .btn {
-            background: var(--primary);
-            color: var(--bg);
-            border: none;
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Historique */
-        .history-section {
-            width: 100%;
-            text-align: left;
-        }
-
-        .history-title {
-            font-size: 1rem;
-            color: var(--text-dim);
-            margin-bottom: 10px;
-            padding-left: 5px;
-        }
-
-        .history-item {
-            background: rgba(30, 41, 59, 0.5);
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .history-time { font-weight: bold; }
-        .history-cote { color: var(--accent); }
+        /* History */
+        .hist-list { max-height: 150px; overflow-y: auto; }
+        .hist-item { font-size: 0.8rem; padding: 8px; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; }
 
         /* Animations */
-        .scanning {
-            animation: pulse 1s infinite;
-            font-size: 1.5rem !important;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
+        .scanning { animation: pulse 1s infinite; font-size: 1.5rem !important; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        #warningZone { display: none; background: var(--danger); color: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>JetX Predictor</h1>
+<div class="container">
+    <div id="warningZone">🚨 STOP : OBJECTIF ATTEINT OU LIMITE ATTEINTE !</div>
 
-        <div class="card">
-            <div class="signal-label">PROCHAIN DÉCOLLAGE ESTIMÉ</div>
+    <div class="card">
+        <h2>Paramètres de Session (Ar)</h2>
+        <div class="input-group"><span>Solde Départ :</span><input type="number" id="budgetInput" value="50000" onchange="initApp()"></div>
+        <div class="input-group"><span>Objectif de Gain :</span><input type="number" id="targetInput" value="20000"></div>
+        <div class="input-group"><span>Limite de Perte :</span><input type="number" id="stopLossInput" value="15000"></div>
+    </div>
+
+    <div class="card">
+        <div class="grid-stats">
+            <div class="stat-box"><span class="stat-label">Solde</span><span id="currentBalance" class="stat-val">50000</span></div>
+            <div class="stat-box"><span class="stat-label">Profit/Perte</span><span id="pnlDisplay" class="stat-val">0</span></div>
+        </div>
+        
+        <div class="signal-zone">
+            <div class="stat-label">Prochain décollage à</div>
             <div id="signalDisplay">--:--</div>
-            <div class="prediction-info">Objectif : <span id="cote">1.00x</span></div>
-            <button class="btn" onclick="generateSignal()">OBTENIR UN SIGNAL</button>
+            <div class="target-cote">Objectif : <span id="cote">1.50x</span></div>
+            <button class="btn btn-main" id="signalBtn" onclick="generateSignal()">GÉNÉRER UN SIGNAL</button>
         </div>
 
-        <div class="history-section">
-            <div class="history-title">Historique des signaux</div>
-            <div id="historyList">
-                </div>
+        <div class="strategy-box" id="strategyInfo">
+            Appuyez sur le bouton pour obtenir une analyse de mise...
+        </div>
+
+        <div class="row">
+            <button class="btn btn-win" onclick="updateBalance(true)">J'AI GAGNÉ (+)</button>
+            <button class="btn btn-lose" onclick="updateBalance(false)">J'AI PERDU (-)</button>
         </div>
     </div>
 
-    <script>
-        // Enregistrement du Service Worker pour la PWA
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
+    <div class="card">
+        <h2>Historique des Sessions</h2>
+        <div id="historyList" class="hist-list"></div>
+    </div>
+</div>
 
-        function generateSignal() {
-            const display = document.getElementById('signalDisplay');
-            const btn = document.querySelector('.btn');
+<script>
+    let initialBudget = 50000;
+    let currentBalance = 50000;
+    let lastBetTotal = 0;
+
+    function initApp() {
+        initialBudget = parseFloat(document.getElementById('budgetInput').value);
+        currentBalance = initialBudget;
+        updateUI();
+    }
+
+    function updateUI() {
+        const pnl = currentBalance - initialBudget;
+        document.getElementById('currentBalance').innerText = currentBalance.toLocaleString() + " Ar";
+        document.getElementById('pnlDisplay').innerText = (pnl > 0 ? "+" : "") + pnl.toLocaleString() + " Ar";
+        document.getElementById('pnlDisplay').style.color = pnl >= 0 ? "var(--accent)" : "var(--danger)";
+
+        const target = parseFloat(document.getElementById('targetInput').value);
+        const stopLoss = parseFloat(document.getElementById('stopLossInput').value);
+
+        if (pnl >= target || pnl <= -stopLoss) {
+            document.getElementById('warningZone').style.display = "block";
+            document.getElementById('signalBtn').disabled = true;
+            document.getElementById('signalBtn').style.opacity = "0.5";
+        }
+    }
+
+    function generateSignal() {
+        const display = document.getElementById('signalDisplay');
+        display.innerText = "ANALYSE...";
+        display.classList.add('scanning');
+        
+        setTimeout(() => {
+            display.classList.remove('scanning');
+            // Logique de l'heure
+            const now = new Date();
+            now.setMinutes(now.getMinutes() + Math.floor(Math.random() * 6) + 2);
+            const timeStr = String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
+            display.innerText = timeStr;
+
+            // Logique de la cote
+            const coteVal = (Math.random() * (2.2 - 1.3) + 1.3).toFixed(2);
+            document.getElementById('cote').innerText = coteVal + "x";
+
+            // Calcul Stratégie Double Mise (Ex: 2% + 2% du capital)
+            const unit = Math.floor(currentBalance * 0.02);
+            lastBetTotal = unit * 2;
             
-            // Verrouiller le bouton pendant l'analyse
-            btn.disabled = true;
-            btn.style.opacity = "0.5";
-            display.innerText = "ANALYSE EN COURS...";
-            display.classList.add('scanning');
-
-            setTimeout(() => {
-                display.classList.remove('scanning');
-                btn.disabled = false;
-                btn.style.opacity = "1";
-
-                // Calcul de l'heure (Maintenant + 2 à 10 minutes)
-                const now = new Date();
-                const wait = Math.floor(Math.random() * 8) + 2;
-                now.setMinutes(now.getMinutes() + wait);
-                
-                const h = String(now.getHours()).padStart(2, '0');
-                const m = String(now.getMinutes()).padStart(2, '0');
-                const timeStr = `${h}:${m}`;
-
-                // Calcul de la cote (Entre 1.20 et 2.80)
-                const coteVal = (Math.random() * (2.8 - 1.2) + 1.2).toFixed(2);
-                const coteStr = `${coteVal}x`;
-
-                // Mise à jour de l'affichage
-                display.innerText = timeStr;
-                document.getElementById('cote').innerText = coteStr;
-
-                // Ajouter à l'historique
-                addToHistory(timeStr, coteStr);
-
-            }, 2000);
-        }
-
-        function addToHistory(time, cote) {
-            const list = document.getElementById('historyList');
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `
-                <span class="history-time">Heure : ${time}</span>
-                <span class="history-cote">Cote : ${cote}</span>
+            document.getElementById('strategyInfo').innerHTML = `
+                <strong>STRATÉGIE CONSEILLÉE :</strong><br>
+                • Mise 1 : <b>${unit.toLocaleString()} Ar</b> (Cashout à 1.50x)<br>
+                • Mise 2 : <b>${unit.toLocaleString()} Ar</b> (Cashout à ${coteVal}x)
             `;
-            
-            // Insérer au début de la liste
-            list.insertBefore(item, list.firstChild);
+        }, 1500);
+    }
 
-            // Garder seulement les 5 derniers
-            if (list.children.length > 5) {
-                list.removeChild(list.lastChild);
-            }
+    function updateBalance(isWin) {
+        if(lastBetTotal === 0) return alert("Générez un signal d'abord !");
+        
+        const unit = lastBetTotal / 2;
+        if (isWin) {
+            const cote = parseFloat(document.getElementById('cote').innerText);
+            const profit = Math.floor((unit * 1.5) + (unit * cote)) - lastBetTotal;
+            currentBalance += profit;
+            addHistory("GAIN", profit, document.getElementById('signalDisplay').innerText);
+        } else {
+            currentBalance -= lastBetTotal;
+            addHistory("PERTE", -lastBetTotal, document.getElementById('signalDisplay').innerText);
         }
-    </script>
+        updateUI();
+    }
+
+    function addHistory(type, amount, time) {
+        const list = document.getElementById('historyList');
+        const item = document.createElement('div');
+        item.className = 'hist-item';
+        item.innerHTML = `<span><b>${time}</b> - ${type}</span> <span style="color:${amount>0?'var(--accent)':'var(--danger)'}">${amount > 0 ? '+' : ''}${amount.toLocaleString()} Ar</span>`;
+        list.insertBefore(item, list.firstChild);
+    }
+
+    initApp();
+</script>
 </body>
 </html>
