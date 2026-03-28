@@ -3,170 +3,158 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JetX Strategy Pro - Min 200Ar</title>
+    <title>JetX Predictor Mada</title>
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --primary: #38bdf8;
+            --jetx-yellow: #ffde00; --jetx-black: #121212; --jetx-gray: #1e1e1e;
             --accent: #4ade80; --danger: #f87171; --text-dim: #94a3b8;
         }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 450px; }
-        .card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid rgba(56,189,248,0.2); margin-bottom: 15px; }
-        h2 { font-size: 0.85rem; color: var(--primary); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
+        body { background: var(--jetx-black); color: white; font-family: 'Roboto', sans-serif; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 400px; }
         
-        /* Dashboard */
-        .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; text-align: center; }
-        .stat-val { font-size: 1.1rem; font-weight: bold; display: block; }
-        .stat-label { font-size: 0.65rem; color: var(--text-dim); }
+        .card { background: var(--jetx-gray); border-radius: 12px; padding: 15px; margin-bottom: 10px; border: 1px solid #333; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .balance-chip { background: #000; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--jetx-yellow); color: var(--jetx-yellow); font-weight: bold; }
 
-        /* Signal */
-        #signalDisplay { font-size: 3.5rem; font-weight: bold; color: var(--accent); margin: 5px 0; text-align: center; }
-        .target-text { text-align: center; color: var(--text-dim); font-size: 0.9rem; margin-bottom: 15px; }
+        /* Signal Zone */
+        .signal-box { text-align: center; padding: 20px 0; background: linear-gradient(180deg, #1e1e1e 0%, #000 100%); border-radius: 15px; margin-bottom: 15px; }
+        #signalTime { font-size: 3.5rem; font-weight: bold; color: var(--jetx-yellow); margin: 0; }
+        .scanning { animation: blink 1s infinite; font-size: 1.5rem !important; }
 
-        /* Double Mise */
-        .double-bet-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
-        .bet-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); padding: 10px; border-radius: 12px; text-align: center; }
-        .bet-amount { font-size: 1.2rem; font-weight: bold; color: white; display: block; margin: 5px 0; }
-        .bet-target { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
+        /* Double Mise Display */
+        .bet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .bet-card { background: #121212; padding: 10px; border-radius: 8px; border-left: 4px solid var(--jetx-yellow); text-align: center; }
+        .bet-val { font-size: 1.1rem; font-weight: bold; color: white; display: block; }
+        .bet-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
 
-        /* Inputs */
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 110px; text-align: center; font-weight: bold; }
-        .input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.85rem; }
-        .auto-info { font-size: 0.7rem; color: var(--accent); margin-top: -5px; margin-bottom: 10px; text-align: right; }
+        /* Input Zone */
+        .input-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.8rem; }
+        input { background: #000; border: 1px solid #444; color: var(--jetx-yellow); padding: 8px; border-radius: 6px; width: 80px; text-align: center; font-weight: bold; }
 
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; }
-        .btn-main { background: var(--primary); color: var(--bg); margin-bottom: 15px; }
-        .btn-win { background: var(--accent); color: var(--bg); width: 48%; }
-        .btn-lose { background: var(--danger); color: white; width: 48%; }
-        .row { display: flex; justify-content: space-between; gap: 10px; }
+        /* Buttons */
+        .btn { width: 100%; padding: 15px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
+        .btn-yellow { background: var(--jetx-yellow); color: #000; margin-bottom: 10px; }
+        .btn-win { background: var(--accent); color: #000; width: 48%; }
+        .btn-lose { background: var(--danger); color: #000; width: 48%; }
+        .row { display: flex; justify-content: space-between; }
 
-        #warningZone { display: none; background: var(--danger); color: white; padding: 15px; border-radius: 10px; margin-bottom: 15px; font-weight: bold; text-align: center; }
-        .scanning { animation: pulse 1s infinite; font-size: 1.5rem !important; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        #stopZone { display: none; background: var(--danger); color: white; padding: 10px; border-radius: 8px; margin-bottom: 10px; text-align: center; font-weight: bold; font-size: 0.8rem; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="warningZone">🚨 SESSION TERMINÉE !</div>
+    <div id="stopZone">⚠️ LIMITE ATTEINTE : ARRÊTEZ DE JOUER !</div>
 
-    <div class="card">
-        <h2>Paramètres de Session</h2>
-        <div class="input-group">
-            <span>Budget (Ar) :</span>
-            <input type="number" id="budgetInput" value="10000" oninput="autoCalc()">
-        </div>
-        <div class="auto-info">Objectifs Auto (40% gain / 30% perte)</div>
-        
-        <div class="input-group" style="opacity: 0.7;">
-            <span>Objectif Gain :</span>
-            <input type="number" id="targetInput" readonly>
-        </div>
-        <div class="input-group" style="opacity: 0.7;">
-            <span>Limite Perte :</span>
-            <input type="number" id="stopLossInput" readonly>
-        </div>
+    <div class="header">
+        <span style="font-size: 0.8rem; color: var(--text-dim);">PROJET : MULTIDEALS MADA</span>
+        <div class="balance-chip"><span id="displayBalance">2138</span> MGA</div>
     </div>
 
     <div class="card">
-        <div class="grid-stats">
-            <div class="stat-box"><span class="stat-label">SOLDE</span><span id="currentBalance" class="stat-val">0</span></div>
-            <div class="stat-box"><span class="stat-label">P/L</span><span id="pnlDisplay" class="stat-val">0</span></div>
+        <div class="input-row">
+            <span>Solde Actuel (MGA) :</span>
+            <input type="number" id="budgetInput" value="2138" oninput="autoCalc()">
+        </div>
+        <div class="input-row" style="opacity: 0.6;">
+            <span>Dernier Crash (ex: 1.84) :</span>
+            <input type="text" id="lastCrash" placeholder="x.xx">
+        </div>
+    </div>
+
+    <div class="card signal-box">
+        <div id="signalTime">--:--</div>
+        <div style="font-size: 0.7rem; color: var(--text-dim); letter-spacing: 2px;">ESTIMATION PROCHAIN CRASH</div>
+        
+        <div class="bet-grid">
+            <div class="bet-card">
+                <span class="bet-label">Mise 1</span>
+                <span id="m1_amt" class="bet-val">200</span>
+                <span style="color:var(--jetx-yellow); font-size: 0.8rem;">Auto: 1.50x</span>
+            </div>
+            <div class="bet-card">
+                <span class="bet-label">Mise 2</span>
+                <span id="m2_amt" class="bet-val">200</span>
+                <span id="target_x" style="color:var(--jetx-yellow); font-size: 0.8rem;">Auto: 2.00x</span>
+            </div>
         </div>
 
-        <div id="signalDisplay">--:--</div>
-        <div class="target-text">Analyse temps réel</div>
-
-        <div class="double-bet-container">
-            <div class="bet-box">
-                <span class="stat-label">MISE 1</span>
-                <span id="bet1Amount" class="bet-amount">0 Ar</span>
-                <span class="bet-target">Sortie : 1.50x</span>
-            </div>
-            <div class="bet-box">
-                <span class="stat-label">MISE 2</span>
-                <span id="bet2Amount" class="bet-amount">0 Ar</span>
-                <span id="bet2Target" class="bet-target">Sortie : 2.00x</span>
-            </div>
-        </div>
-
-        <button class="btn btn-main" id="signalBtn" onclick="generateSignal()">GÉNÉRER SIGNAL</button>
-
+        <button class="btn btn-yellow" id="calcBtn" onclick="generateSignal()">Calculer le Signal</button>
+        
         <div class="row">
-            <button class="btn btn-win" onclick="updateBalance(true)">GAGNÉ</button>
-            <button class="btn btn-lose" onclick="updateBalance(false)">PERDU</button>
+            <button class="btn btn-win" onclick="updateBalance(true)">Gagné</button>
+            <button class="btn btn-lose" onclick="updateBalance(false)">Perdu</button>
         </div>
     </div>
 </div>
 
 <script>
-    let initialBudget = 10000;
-    let currentBalance = 10000;
-    let currentBetTotal = 0;
-    const MIN_BET = 200; // Limite Bet261
+    let currentBalance = 2138;
+    let initialSessionBalance = 2138;
+    let currentBetTotal = 400;
 
     function autoCalc() {
         const val = parseFloat(document.getElementById('budgetInput').value) || 0;
-        initialBudget = val;
         currentBalance = val;
-        
-        document.getElementById('targetInput').value = Math.floor(val * 0.40);
-        document.getElementById('stopLossInput').value = Math.floor(val * 0.30);
-        
+        initialSessionBalance = val;
         updateUI();
     }
 
     function updateUI() {
-        const pnl = currentBalance - initialBudget;
-        document.getElementById('currentBalance').innerText = currentBalance.toLocaleString() + " Ar";
-        document.getElementById('pnlDisplay').innerText = (pnl > 0 ? "+" : "") + pnl.toLocaleString();
-        document.getElementById('pnlDisplay').style.color = pnl >= 0 ? "var(--accent)" : "var(--danger)";
-
-        const target = parseFloat(document.getElementById('targetInput').value);
-        const stopLoss = parseFloat(document.getElementById('stopLossInput').value);
-
-        if ((pnl >= target || pnl <= -stopLoss) && initialBudget > 0) {
-            document.getElementById('warningZone').style.display = "block";
-            document.getElementById('signalBtn').disabled = true;
+        document.getElementById('displayBalance').innerText = Math.floor(currentBalance).toLocaleString();
+        
+        // Sécurité Stop-Loss : Si on perd 30% du solde de départ
+        if (currentBalance < (initialSessionBalance * 0.7)) {
+            document.getElementById('stopZone').style.display = "block";
         } else {
-            document.getElementById('warningZone').style.display = "none";
-            document.getElementById('signalBtn').disabled = false;
+            document.getElementById('stopZone').style.display = "none";
         }
     }
 
     function generateSignal() {
-        const display = document.getElementById('signalDisplay');
-        display.innerText = "ANALYSE...";
-        display.classList.add('scanning');
+        const timeDiv = document.getElementById('signalTime');
+        const btn = document.getElementById('calcBtn');
+        
+        timeDiv.innerText = "ANALYSE";
+        timeDiv.classList.add('scanning');
+        btn.disabled = true;
 
         setTimeout(() => {
-            display.classList.remove('scanning');
+            timeDiv.classList.remove('scanning');
+            btn.disabled = false;
+
+            // Heure fictive basée sur le cycle
             const now = new Date();
-            now.setMinutes(now.getMinutes() + Math.floor(Math.random() * 5) + 2);
-            display.innerText = String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
+            now.setMinutes(now.getMinutes() + Math.floor(Math.random() * 4) + 1);
+            timeDiv.innerText = String(now.getHours()).padStart(2,'0') + ":" + String(now.getMinutes()).padStart(2,'0');
 
-            const coteTarget = (Math.random() * (2.4 - 1.6) + 1.6).toFixed(2);
-            document.getElementById('bet2Target').innerText = "Sortie : " + coteTarget + "x";
+            // Ajustement de la cible selon le dernier crash (si renseigné)
+            const last = parseFloat(document.getElementById('lastCrash').value) || 2;
+            let target;
+            if (last < 1.5) target = (Math.random() * (3.5 - 2.0) + 2.0).toFixed(2); // Après un petit crash, on espère un gros
+            else target = (Math.random() * (2.2 - 1.6) + 1.6).toFixed(2); // Après un gros, on reste prudent
+            
+            document.getElementById('target_x').innerText = "Auto: " + target + "x";
 
-            // Calcul mise (2.5% du capital ou 200 Ar minimum)
-            let unit = Math.floor(currentBalance * 0.025);
-            if (unit < MIN_BET) unit = MIN_BET;
+            // Mise : On reste à 200 Ar si le solde est < 5000 MGA (Stratégie de survie)
+            let unit = 200;
+            if (currentBalance > 10000) unit = Math.floor(currentBalance * 0.02);
             
             currentBetTotal = unit * 2;
-            
-            document.getElementById('bet1Amount').innerText = unit.toLocaleString() + " Ar";
-            document.getElementById('bet2Amount').innerText = unit.toLocaleString() + " Ar";
-        }, 1000);
+            document.getElementById('m1_amt').innerText = unit;
+            document.getElementById('m2_amt').innerText = unit;
+
+        }, 1200);
     }
 
     function updateBalance(isWin) {
-        if(currentBetTotal === 0) return;
         const unit = currentBetTotal / 2;
-        const cote2 = parseFloat(document.getElementById('bet2Target').innerText.replace('Sortie : ', ''));
+        const targetX = parseFloat(document.getElementById('target_x').innerText.replace('Auto: ', ''));
 
         if (isWin) {
-            const profit = Math.floor((unit * 1.5) + (unit * cote2)) - currentBetTotal;
+            // Gain = (Mise1 * 1.5) + (Mise2 * Target) - Mises
+            const profit = (unit * 1.5) + (unit * targetX) - currentBetTotal;
             currentBalance += profit;
         } else {
             currentBalance -= currentBetTotal;
