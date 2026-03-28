@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JetX Auto-Strategy Pro</title>
+    <title>JetX Strategy Pro - Min 200Ar</title>
     <style>
         :root {
             --bg: #0f172a; --card: #1e293b; --primary: #38bdf8;
@@ -14,7 +14,7 @@
         .card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid rgba(56,189,248,0.2); margin-bottom: 15px; }
         h2 { font-size: 0.85rem; color: var(--primary); margin: 0 0 15px 0; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* Stats */
+        /* Dashboard */
         .grid-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .stat-box { background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px; text-align: center; }
         .stat-val { font-size: 1.1rem; font-weight: bold; display: block; }
@@ -27,11 +27,11 @@
         /* Double Mise */
         .double-bet-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .bet-box { background: rgba(56, 189, 248, 0.1); border: 1px solid var(--primary); padding: 10px; border-radius: 12px; text-align: center; }
-        .bet-amount { font-size: 1.2rem; font-weight: bold; display: block; margin: 5px 0; }
+        .bet-amount { font-size: 1.2rem; font-weight: bold; color: white; display: block; margin: 5px 0; }
         .bet-target { font-size: 0.8rem; color: var(--primary); font-weight: bold; }
 
         /* Inputs */
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 100px; text-align: center; font-weight: bold; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 8px; border-radius: 6px; width: 110px; text-align: center; font-weight: bold; }
         .input-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 0.85rem; }
         .auto-info { font-size: 0.7rem; color: var(--accent); margin-top: -5px; margin-bottom: 10px; text-align: right; }
 
@@ -54,17 +54,17 @@
     <div class="card">
         <h2>Paramètres de Session</h2>
         <div class="input-group">
-            <span>Budget de départ (Ar) :</span>
-            <input type="number" id="budgetInput" value="50000" oninput="autoCalc()">
+            <span>Budget (Ar) :</span>
+            <input type="number" id="budgetInput" value="10000" oninput="autoCalc()">
         </div>
-        <div class="auto-info">Objectifs calculés automatiquement (40% gain / 30% perte)</div>
+        <div class="auto-info">Objectifs Auto (40% gain / 30% perte)</div>
         
         <div class="input-group" style="opacity: 0.7;">
-            <span>Objectif Gain (+):</span>
+            <span>Objectif Gain :</span>
             <input type="number" id="targetInput" readonly>
         </div>
         <div class="input-group" style="opacity: 0.7;">
-            <span>Limite Perte (-):</span>
+            <span>Limite Perte :</span>
             <input type="number" id="stopLossInput" readonly>
         </div>
     </div>
@@ -76,16 +76,16 @@
         </div>
 
         <div id="signalDisplay">--:--</div>
-        <div class="target-text">Prochain décollage estimé</div>
+        <div class="target-text">Analyse temps réel</div>
 
         <div class="double-bet-container">
             <div class="bet-box">
-                <span class="stat-label">MISE 1 (SÉCU)</span>
+                <span class="stat-label">MISE 1</span>
                 <span id="bet1Amount" class="bet-amount">0 Ar</span>
                 <span class="bet-target">Sortie : 1.50x</span>
             </div>
             <div class="bet-box">
-                <span class="stat-label">MISE 2 (RISQUE)</span>
+                <span class="stat-label">MISE 2</span>
                 <span id="bet2Amount" class="bet-amount">0 Ar</span>
                 <span id="bet2Target" class="bet-target">Sortie : 2.00x</span>
             </div>
@@ -94,23 +94,23 @@
         <button class="btn btn-main" id="signalBtn" onclick="generateSignal()">GÉNÉRER SIGNAL</button>
 
         <div class="row">
-            <button class="btn btn-win" onclick="updateBalance(true)">GAIN</button>
-            <button class="btn btn-lose" onclick="updateBalance(false)">PERTE</button>
+            <button class="btn btn-win" onclick="updateBalance(true)">GAGNÉ</button>
+            <button class="btn btn-lose" onclick="updateBalance(false)">PERDU</button>
         </div>
     </div>
 </div>
 
 <script>
-    let initialBudget = 50000;
-    let currentBalance = 50000;
+    let initialBudget = 10000;
+    let currentBalance = 10000;
     let currentBetTotal = 0;
+    const MIN_BET = 200; // Limite Bet261
 
     function autoCalc() {
         const val = parseFloat(document.getElementById('budgetInput').value) || 0;
         initialBudget = val;
         currentBalance = val;
         
-        // Calcul automatique des objectifs
         document.getElementById('targetInput').value = Math.floor(val * 0.40);
         document.getElementById('stopLossInput').value = Math.floor(val * 0.30);
         
@@ -149,8 +149,10 @@
             const coteTarget = (Math.random() * (2.4 - 1.6) + 1.6).toFixed(2);
             document.getElementById('bet2Target').innerText = "Sortie : " + coteTarget + "x";
 
-            // Mise = 2.5% du capital actuel par main
-            const unit = Math.floor(currentBalance * 0.025);
+            // Calcul mise (2.5% du capital ou 200 Ar minimum)
+            let unit = Math.floor(currentBalance * 0.025);
+            if (unit < MIN_BET) unit = MIN_BET;
+            
             currentBetTotal = unit * 2;
             
             document.getElementById('bet1Amount').innerText = unit.toLocaleString() + " Ar";
@@ -172,7 +174,6 @@
         updateUI();
     }
 
-    // Initialisation au chargement
     autoCalc();
 </script>
 </body>
